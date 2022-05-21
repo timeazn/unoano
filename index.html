@@ -1,43 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>A Thousand Wordles</title>
 
-		<!-- Imports -->
-		<script src="assets/js/jquery-3.6.0.min.js"></script>
+<head>
 
-	</head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>A Thousand Wordles</title>
 
-	<link rel="stylesheet" href="assets/css/bulma.min.css" />
+	<!-- Imports -->
+	<script src="assets/js/jquery-3.6.0.min.js"></script>
 
-	<style>
+</head>
 
-		body, html {
-			height: 100%;
-			overflow-x: hidden;
-		}
+<link rel="stylesheet" href="assets/css/bulma.min.css" />
 
-		#landing_div {
-			background-image: url(assets/images/picture.jpeg);
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-attachment: fixed;
-			background-position: center;
-			height: 100%;
-		}
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-	</style>
+	body,
+	html {
+		height: 100%;
+		/* overflow-y: hidden; */
+	}
 
-	<body>
+	#landing_div {
+		background-image: url(assets/images/picture.jpeg);
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-position: center;
+		height: 100%;
+		box-shadow: inset 0 -10em 10em -10em black;
+	}
 
-		<div id="landing_div" align="center">
-			<img src="assets/images/title.svg">
-		</div>
+	#landing_div h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 25pt;
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
 
-	</body>
+	#instructions_div {
+		/* background-image: url(assets/images/scrapbook.jpeg); */
+		background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), url(assets/images/scrapbook.jpeg);
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-position: center;
+		height: 100%;
+		box-shadow: inset 0 10em 9em -10em black;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	#instructions_div h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 23pt;
+		font-weight: bold;
+		margin-top: 2.5em;
+		color: honeydew;
+		text-align: center;
+		margin-left: 1em;
+		margin-right: 1em;
+		margin-top: 0em;
+	}
+
+	#add_memory {
+		background-image: url(assets/images/retro.jpeg);
+		/* background: linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, 0)), url(assets/images/retro.jpeg); */
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-position: center;
+		height: 100%;
+		box-shadow: inset 0 10em 9em -10em black;
+	}
+
+
+
+</style>
+
+<script>
+
+	$(document).ready(function () {
+		$("#landing_div h1").slideDown(1500);
+	});
+
+</script>
+
+<body>
+
+	<div id="landing_div" align="center">
+		<!-- <img src="assets/images/title.svg">-->
+		<h1 hidden>a picture is worth <b>a thousand wordles.</b></h1>
+	</div>
+
+	<div id="instructions_div">
+		<h1>a virtual scrapbook for every wonderful moment with you.</h1>
+	</div>
+
+	<div id="add_memory">
+
+	</div>
+
+</body>
 
 </html>
