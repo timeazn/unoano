@@ -10,18 +10,22 @@
 
 	<!-- Imports -->
 	<script src="assets/js/jquery-3.6.0.min.js"></script>
+	<script src="assets/js/jquery-ui.js"></script>
+
 
 </head>
 
 <link rel="stylesheet" href="assets/css/bulma.min.css" />
+<link rel="stylesheet" href="assets/css/jquery-ui.min.css"/>
+<link rel="stylesheet" href="assets/css/jquery-ui.theme.min.css"/>
 
 <style>
+
 	@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
 	body,
 	html {
 		height: 100%;
-		/* overflow-y: hidden; */
 	}
 
 	#landing_div {
@@ -44,14 +48,13 @@
 	}
 
 	#instructions_div {
-		/* background-image: url(assets/images/scrapbook.jpeg); */
 		background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), url(assets/images/scrapbook.jpeg);
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-attachment: fixed;
 		background-position: center;
 		height: 100%;
-		box-shadow: inset 0 10em 9em -10em black;
+		box-shadow: inset 0 -10em 10em -10em black, inset 0 10em 9em -10em black;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -69,42 +72,375 @@
 		margin-top: 0em;
 	}
 
-	#add_memory {
-		background-image: url(assets/images/retro.jpeg);
-		/* background: linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, 0)), url(assets/images/retro.jpeg); */
+	.polaroid_div {
 		background-size: cover;
 		background-repeat: no-repeat;
-		background-attachment: fixed;
 		background-position: center;
+		width: 100%;
 		height: 100%;
-		box-shadow: inset 0 10em 9em -10em black;
+		box-shadow: inset 0 -10em 10em -10em black, inset 0 10em 9em -10em black;
 	}
 
+	.wordle_div {
+		height: 100%; 
+		width: 100%; 
+		background:rgba(0,0,0,.7); 
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	.keyboard {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		/* background-color: rgba(0, 0, 0, .5); */
+		/* padding: 1em; */
+		/* border: 3px solid grey; */
+		margin-bottom: 1em;
+	}
+
+	.keyboard>div {
+		margin-bottom: 5px;
+		/* display: flex; */
+		column-gap: 5px;
+	}
+
+	.keyboard-key {
+		font-weight: bold;
+		padding: 0.5rem;
+		cursor: pointer;
+		min-width: 20px;
+	}
+
+	.gameboard {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1em;
+	}
+
+	.gameboard-row {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 5px;
+		column-gap: 5px;
+	}
+
+	.gameboard-letter {
+		width: 1.6em;
+		height: 1.6em;
+		border: 1px solid lightgray;
+		background-color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		font-size: 1.6rem;
+		font-weight: bold;
+		display: flex;
+		color: rgb(41, 41, 41);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.correct-letter {
+		background-color: #6aaa65;
+		color: white;
+	}
+
+	.almost-letter	{
+		background-color: #c9b458;
+		color: white;
+	}
+
+	.wrong-letter {
+		background-color: #414141;
+		color: white;
+	}
 
 
 </style>
 
 <script>
 
+	const sections = [
+		{
+			image: "green_sweaters.jpeg",
+			word: "begin",
+			memory: ""
+		},
+		{
+			image: "lake.jpeg",
+			word: "tasty",
+			memory: ""
+		}
+	];
+
+	const permitted_keys = "abcdefghijklmnopqrstuvwxyz";
+
+	var word_lists = {};
+
+	//load words
+	fetch("all_words.txt")
+	.then(response => response.text())
+	.then(text => {
+		let all_words = text.split("\n");
+		for(const word of all_words) {
+			let index = word.length;
+			if(!(index in word_lists)) {
+				word_lists[index] = [word];
+			} else {
+				word_lists[index].push(word);
+			}
+		}
+	})
+
+	//init wordle interxns
+	var current_wordle_id = "wordle_0";
+	let wordle_enter_letter = (letter) => {
+
+		let current_wordle = $(`#${current_wordle_id}`);
+		let current_guess_index = current_wordle.attr("guess_index");
+		let current_guess_row = current_wordle.find(`.gameboard-row[guess=${current_guess_index}]`);
+		current_guess_row.find(".gameboard-letter:empty").first().text(letter.toUpperCase());
+	
+	};
+	let wordle_delete_letter = () => {
+
+		let current_wordle = $(`#${current_wordle_id}`);
+		let current_guess_index = current_wordle.attr("guess_index");
+		let current_guess_row = current_wordle.find(`.gameboard-row[guess=${current_guess_index}]`);
+		current_guess_row.find(".gameboard-letter").not(":empty").last().empty();
+
+	}
+	let wordle_submit = () => {
+
+		let current_wordle = $(`#${current_wordle_id}`);
+		let current_guess_index = Number(current_wordle.attr("guess_index"));
+		let current_guess_row = current_wordle.find(`.gameboard-row[guess=${current_guess_index}]`);
+		let max_tries = current_wordle.attr("max");
+		let current_word = "";
+		let complete_word = true;
+
+		current_guess_row.find(".gameboard-letter").each(function() {
+			if($(this).text() == "") {
+				complete_word = false;						
+			} else {
+				current_word += $(this).text();
+			}
+		});
+
+		if(!complete_word) {
+			current_guess_row.find(".gameboard-letter").effect("shake", {distance: 10});
+			return;
+		}
+
+		let list_index = current_word.length;
+		let word_is_valid = word_lists[list_index].includes(current_word.toLowerCase());
+		if(!word_is_valid) {
+			current_guess_row.find(".gameboard-letter").effect("shake", {distance: 10});
+			return;
+		}
+
+		//evaluate word
+		let word = current_wordle.attr("word");
+		let guessed_right = true;
+		$(current_guess_row).find(".gameboard-letter").each(function(){
+			
+			let guess_letter = $(this).text();
+			let correct_letter = $(this).attr("letter");
+
+			if(guess_letter.toLowerCase() == correct_letter.toLowerCase()) {
+				$(this).addClass("correct-letter", 1200);
+				return;
+			}
+
+			guessed_right = false;
+
+			if(word.includes(guess_letter.toLowerCase())) {
+				$(this).addClass("almost-letter", 1200);
+				return;
+			}
+
+			$(this).addClass("wrong-letter", 1200);
+			$(current_wordle).find(`.keyboard-key:contains(${guess_letter.toUpperCase()})`).not(".enter-key, .delete-key").removeClass("is-light").addClass("is-dark", 1000);
+
+		});
+
+		if(!guessed_right) {
+
+			if(current_guess_index < max_tries - 1){
+				current_wordle.attr("guess_index", current_guess_index + 1);
+			} else {
+				current_wordle.find(".gameboard-letter").each(function(){
+					$(this).empty().removeClass("correct-letter", 1000);
+					$(this).empty().removeClass("almost-letter", 1000);
+					$(this).empty().removeClass("wrong-letter", 1000);
+				});
+				current_wordle.attr("guess_index", "0");
+				$(current_wordle).find(`.keyboard-key`).removeClass("is-dark", 1000).addClass("is-light");
+
+			}
+
+			return;
+
+		} 
+
+		//success
+
+
+	
+	}
+
 	$(document).ready(function () {
+
+		//init
 		$("#landing_div h1").slideDown(1500);
+
+		let section_ct = 0;
+		for(const section of sections) {
+
+			let word = section["word"];
+			let memory = section["memory"];
+			let image_name = section["image"];
+			let max_tries = word.length + 1;
+
+			//Set up gameboard
+			let gameboard_inner = "";
+			let letter_counter = 0;
+			for(let i = 0; i < max_tries; i++) {
+				gameboard_inner += `<div class='gameboard-row' guess='${i}'>`;
+				for(const letter of word) {
+					gameboard_inner += `<div index=${letter_counter} letter='${letter}' class='gameboard-letter'></div>`;
+					letter_counter++;
+				}
+				gameboard_inner += "</div>"
+			}
+
+			//Polaroid
+			let polaroid_container = `<div 
+			style='background-image: url(assets/images/${image_name})' class='polaroid_div'>
+				
+				<div class='wordle_div' guess_index=0 id='wordle_${section_ct}' word='${word}' max=${max_tries} memory='${memory}'>
+					<div class='gameboard'>
+						${gameboard_inner}
+					</div>
+					<div class='keyboard'>
+						<div>
+							<button class="button keyboard-key">Q</button>
+							<button class="button keyboard-key">W</button>
+							<button class="button keyboard-key">E</button>
+							<button class="button keyboard-key">R</button>
+							<button class="button keyboard-key">T</button>
+							<button class="button keyboard-key">Y</button>
+							<button class="button keyboard-key">U</button>
+							<button class="button keyboard-key">I</button>
+							<button class="button keyboard-key">O</button>
+							<button class="button keyboard-key">P</button>
+						</div>
+						<div>
+							<button class="button keyboard-key">A</button>
+							<button class="button keyboard-key">S</button>
+							<button class="button keyboard-key">D</button>
+							<button class="button keyboard-key">F</button>
+							<button class="button keyboard-key">G</button>
+							<button class="button keyboard-key">H</button>
+							<button class="button keyboard-key">J</button>
+							<button class="button keyboard-key">K</button>
+							<button class="button keyboard-key">L</button>
+						</div>
+						<div>
+							<button class="button keyboard-key enter-key">ENT</button>
+							<button class="button keyboard-key">Z</button>
+							<button class="button keyboard-key">X</button>
+							<button class="button keyboard-key">C</button>
+							<button class="button keyboard-key">V</button>
+							<button class="button keyboard-key">B</button>
+							<button class="button keyboard-key">N</button>
+							<button class="button keyboard-key">M</button>
+							<button class="button keyboard-key delete-key">DEL</button>
+						</div>
+					</div>
+
+					<button class="exit button is-dark"><b>EXIT WORDLE</b></button>
+				
+				</div>
+			
+			</div>`;
+
+			$("body").append(polaroid_container);
+
+		}
+ 
+		$("#instructions_div").hide();
+
+		// $(".wordle_div").hide();
+
+		$(".polaroid_div").on("click", function() {
+			
+			let wordle_div = $(this).find(".wordle_div");
+			if(wordle_div.is(":hidden")) {
+				wordle_div.fadeIn();
+			}
+
+		});
+
+		//virtual keyboard interxns
+		$(".keyboard-key").on("mousedown", function() {
+
+			if($(this).hasClass("enter-key")) {
+
+				wordle_submit();
+				return;
+
+			}
+
+			if($(this).hasClass("delete-key")) {
+
+				wordle_delete_letter();
+				return;
+
+			}
+			
+			//add letter
+			let letter = $(this).text();
+			wordle_enter_letter(letter);
+
+		}).addClass("is-light");
+
+	})
+
+	//detect keypress
+	.on("keydown", function(event) {
+		
+		let key = event.key;
+
+		//alphabet
+		if(permitted_keys.includes(key)) {
+			wordle_enter_letter(key);
+		} 
+		
+		//delete
+		else if(event.keyCode == 8) {
+			wordle_delete_letter();
+		}
+
+		//enter
+		else if(event.keyCode == 13) {
+			wordle_submit();
+		}
+
 	});
 
 </script>
 
 <body>
 
-	<div id="landing_div" align="center">
+	<div hidden id="landing_div" align="center">
 		<!-- <img src="assets/images/title.svg">-->
 		<h1 hidden>a picture is worth <b>a thousand wordles.</b></h1>
 	</div>
 
 	<div id="instructions_div">
-		<h1>a virtual scrapbook for every wonderful moment with you.</h1>
-	</div>
-
-	<div id="add_memory">
-
+		<h1>a virtual scrapbook for wonderful moments with you.</h1>
 	</div>
 
 </body>
