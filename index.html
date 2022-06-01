@@ -156,6 +156,17 @@
 		color: white;
 	}
 
+	.memory {
+		font-size: 1.25em;
+		text-align: center;
+		color:white;
+		padding: 1em;
+	}
+
+	.memory p {
+		margin-bottom: 10px;
+	}
+
 
 </style>
 
@@ -165,7 +176,7 @@
 		{
 			image: "green_sweaters.jpeg",
 			word: "begin",
-			memory: ""
+			memory: "I think this was close to where my feelings really began for you. I remember praying for you a lot, and noticing that you were really cute and fun and funny and spiritual. I thought you were a million miles out of my league. I remember going to midweek every week and hoping we'd match colors. And every time we did, my heart would skip a beat because it'd give me another reason to talk to you."
 		},
 		{
 			image: "lake.jpeg",
@@ -276,7 +287,7 @@
 					$(this).empty().removeClass("wrong-letter", 1000);
 				});
 				current_wordle.attr("guess_index", "0");
-				$(current_wordle).find(`.keyboard-key`).removeClass("is-dark", 1000).addClass("is-light");
+				$(current_wordle).find(`.keyboard-key`).removeClass("is-dark",1000).addClass("is-light", 1000);
 
 			}
 
@@ -285,8 +296,9 @@
 		} 
 
 		//success
-
-
+		current_wordle.find(".gameboard-row").not(`div[guess=${current_guess_index}]`).slideUp();
+		current_wordle.find(".keyboard, .exit").slideUp();
+		current_wordle.find(".memory").slideDown();
 	
 	}
 
@@ -302,6 +314,15 @@
 			let memory = section["memory"];
 			let image_name = section["image"];
 			let max_tries = word.length + 1;
+			
+			//break up memory into paragraphs
+			let memory_items = "";
+			for(const sentence of memory.split(".")) {
+
+				if(sentence.trim() != ""){
+					memory_items += `<p>${sentence.trim()}.</p>`;
+				}
+			}
 
 			//Set up gameboard
 			let gameboard_inner = "";
@@ -361,24 +382,32 @@
 					</div>
 
 					<button class="exit button is-dark"><b>EXIT WORDLE</b></button>
-				
+
+					<div hidden class='memory'>${memory_items}</div>
+
 				</div>
 			
 			</div>`;
 
 			$("body").append(polaroid_container);
 
+			section_ct++;
+
 		}
  
-		$("#instructions_div").hide();
+		$("#instructions_div, #landing_div").hide();
 
-		// $(".wordle_div").hide();
+		$(".wordle_div").hide();
 
 		$(".polaroid_div").on("click", function() {
 			
 			let wordle_div = $(this).find(".wordle_div");
 			if(wordle_div.is(":hidden")) {
 				wordle_div.fadeIn();
+				current_wordle_id = wordle_div.attr("id");
+				
+				//hide other wordles
+				$(".wordle_div").not(`[id=${current_wordle_id}]`).fadeOut();
 			}
 
 		});
@@ -434,7 +463,7 @@
 
 <body>
 
-	<div hidden id="landing_div" align="center">
+	<div id="landing_div" align="center">
 		<!-- <img src="assets/images/title.svg">-->
 		<h1 hidden>a picture is worth <b>a thousand wordles.</b></h1>
 	</div>
