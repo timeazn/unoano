@@ -6,6 +6,8 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	
 	<title>A Thousand Wordles</title>
 
 	<!-- Imports -->
@@ -102,16 +104,16 @@
 	}
 
 	.keyboard>div {
-		margin-bottom: 5px;
-		/* display: flex; */
-		column-gap: 5px;
+		margin-bottom: 6px;
+		display: flex;
+		column-gap: 6px;
 	}
 
 	.keyboard-key {
 		font-weight: bold;
-		padding: 0.5rem;
+		padding: 0.3rem;
 		cursor: pointer;
-		min-width: 20px;
+		min-width: 1.7rem;
 	}
 
 	.gameboard {
@@ -157,10 +159,10 @@
 	}
 
 	.memory {
-		font-size: 1.25em;
+		font-size: 1.15em;
 		text-align: center;
 		color:white;
-		padding: 1em;
+		padding: 0em 1em 1em;
 	}
 
 	.memory p {
@@ -251,26 +253,49 @@
 			return;
 		}
 
+		//preliminary rinse to grab correct letters
+		let almost_letters = []
+		$(current_guess_row).find(".gameboard-letter").each(function(){
+
+			let guess_letter = $(this).text().toLowerCase().trim();
+			let correct_letter = $(this).attr("letter").toLowerCase().trim();
+
+			if(guess_letter == correct_letter) {
+				almost_letters.push(guess_letter);
+			}
+
+		});
+
 		//evaluate word
 		let word = current_wordle.attr("word");
 		let guessed_right = true;
 		$(current_guess_row).find(".gameboard-letter").each(function(){
 			
-			let guess_letter = $(this).text();
-			let correct_letter = $(this).attr("letter");
+			let guess_letter = $(this).text().toLowerCase().trim();
+			let correct_letter = $(this).attr("letter").toLowerCase().trim();
 
-			if(guess_letter.toLowerCase() == correct_letter.toLowerCase()) {
+			//guessed right
+			if(guess_letter == correct_letter) {
 				$(this).addClass("correct-letter", 1200);
 				return;
 			}
 
 			guessed_right = false;
 
-			if(word.includes(guess_letter.toLowerCase())) {
-				$(this).addClass("almost-letter", 1200);
+			//letter exists
+			if(word.includes(guess_letter)) {
+
+				if(!almost_letters.includes(guess_letter)){
+					$(this).addClass("almost-letter", 1200);
+					almost_letters.push(guess_letter);
+				} else {
+					$(this).addClass("wrong-letter", 1200);
+				}
 				return;
+
 			}
 
+			//letter is wrong and does not exist
 			$(this).addClass("wrong-letter", 1200);
 			$(current_wordle).find(`.keyboard-key:contains(${guess_letter.toUpperCase()})`).not(".enter-key, .delete-key").removeClass("is-light").addClass("is-dark", 1000);
 
@@ -296,9 +321,9 @@
 		} 
 
 		//success
-		current_wordle.find(".gameboard-row").not(`div[guess=${current_guess_index}]`).slideUp();
-		current_wordle.find(".keyboard, .exit").slideUp();
-		current_wordle.find(".memory").slideDown();
+		current_wordle.find(".gameboard-row").not(`div[guess=${current_guess_index}]`).slideUp(1000);
+		current_wordle.find(".keyboard").slideUp(1200);
+		current_wordle.find(".memory").delay(1500).slideDown(1200);
 	
 	}
 
@@ -381,9 +406,9 @@
 						</div>
 					</div>
 
-					<button class="exit button is-dark"><b>EXIT WORDLE</b></button>
-
 					<div hidden class='memory'>${memory_items}</div>
+
+					<button class="exit button is-dark"><b>EXIT WORDLE</b></button>
 
 				</div>
 			
@@ -395,7 +420,7 @@
 
 		}
  
-		$("#instructions_div, #landing_div").hide();
+		// $("#instructions_div, #landing_div").hide();
 
 		$(".wordle_div").hide();
 
@@ -416,17 +441,13 @@
 		$(".keyboard-key").on("mousedown", function() {
 
 			if($(this).hasClass("enter-key")) {
-
 				wordle_submit();
 				return;
-
 			}
 
 			if($(this).hasClass("delete-key")) {
-
 				wordle_delete_letter();
 				return;
-
 			}
 			
 			//add letter
@@ -434,6 +455,11 @@
 			wordle_enter_letter(letter);
 
 		}).addClass("is-light");
+
+		//exit wordle btn
+		$(".exit").on("click", function() {
+			$(this).closest(".wordle_div").fadeOut();
+		});
 
 	})
 
@@ -456,7 +482,7 @@
 		else if(event.keyCode == 13) {
 			wordle_submit();
 		}
-
+		
 	});
 
 </script>
@@ -464,7 +490,6 @@
 <body>
 
 	<div id="landing_div" align="center">
-		<!-- <img src="assets/images/title.svg">-->
 		<h1 hidden>a picture is worth <b>a thousand wordles.</b></h1>
 	</div>
 
