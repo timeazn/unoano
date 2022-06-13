@@ -6,7 +6,7 @@ html {
 }
 
 #landing_div {
-	background-image: url(/assets/images/picture.jpeg);
+	background-image: url(assets/images/picture.jpeg);
 	background-size: cover;
 	background-repeat: no-repeat;
 	/* background-attachment: fixed; */
@@ -29,7 +29,7 @@ html {
 }
 
 #instructions_div {
-	background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), url(/assets/images/scrapbook.jpeg);
+	background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), url(assets/images/scrapbook.jpeg);
 	background-size: cover;
 	background-repeat: no-repeat;
 	/* background-attachment: fixed; */
