@@ -17,8 +17,10 @@
 
 <link rel="stylesheet" href="assets/css/bulma.min.css" />
 <link rel="stylesheet" href="assets/css/jquery-ui.min.css"/>
-<link rel="stylesheet" href="assets/css/jquery-ui.theme.min.css"/>
+<link rel="stylesheet" href="assets/css/main.css"/>
 
+<!-- <link rel="stylesheet" href="assets/css/jquery-ui.theme.min.css"/> -->
+<!-- 
 <style>
 
 	@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
@@ -83,6 +85,7 @@
 		width: 100%;
 		height: 100%;
 		box-shadow: inset 0 -10em 10em -10em black, inset 0 10em 9em -10em black;
+		scroll-snap-align: start;
 	}
 
 	.wordle_div {
@@ -93,6 +96,15 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
+	}
+
+	.wordle_div h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 30pt;
+		font-weight: bold;
+		color: #6aaa65;
+		text-align: center;
+		margin-bottom: 0.5em;
 	}
 
 	.keyboard {
@@ -176,9 +188,13 @@
   	}
 
 
-</style>
+</style> -->
 
 <script>
+
+	const storage_key = "unoano_progress";
+	const stored_progress = JSON.parse(localStorage.getItem(storage_key));
+	var progress = stored_progress != null ? stored_progress : [];
 
 	const sections = [
 		{
@@ -188,8 +204,8 @@
 		},
 		{
 			image: "lake.jpeg",
-			word: "hook",
-			memory: "The formal was such a blast with you! You had so many reasons to not have fun - being sick and having your dress lost and all. Not to mention your date was a nervous wreck and wore a shirt that was way too bright. But, despite all that, you still laughed, danced, and encouraged everyone around you. You were too much fun to be with, and my cheeks almost hurt from smiling that night. It was then that I knew: I was hooked."
+			word: "crush",
+			memory: "The formal was such a blast with you! You had so many reasons to not have fun - being sick and having your dress lost and all. Not to mention your date was a nervous wreck and wore a shirt that was way too bright. But, despite all that, you still laughed, danced, and encouraged everyone around you. You were too much fun to be with, and my cheeks almost hurt from smiling that night. It was then that I knew I had a big, fat crush on you."
 		},
 		{
 			image: "roblox.png",
@@ -199,42 +215,42 @@
 		{
 			image: "visalia-one.jpeg",
 			word: "float",
-			memory: ""
+			memory: "This was the first time I saw you in person since quarantine, and it felt like I was floating through a dream. Seeing you in person was already crazy, but being able to play at the arcade, mini golf, and then finally confess my feelings for you before meeting your family for the first time was unreal and so much fun. Seeing your glowing smile after telling you I liked you was something I’ll never forget."
 		},
 		{
 			image: "ask-two.jpeg",
 			word: "door",
-			memory: ""
+			memory: "I think this was the most nervous I had been all that year! God opened so many doors for me to be able to ask you to be my girlfriend. I remember being so excited but also feeling so concerned that my plan would fail and you wouldn’t be surprised. But seeing your happiness after bringing you flowers, a fortune cookie, and all your close friends was an answer to so many prayers and made all the planning worth it. Without a doubt, I’m so lucky to be able to call you my girlfriend to this day."
 		},
 		{
-			image: "boat-two.jpeg",
-			word: "speed",
-			memory: ""
+			image: "love.jpeg",
+			word: "love",
+			memory: "I’ll always remember our adventure to the Sequoia’s, not only because we saw a bear, but because this was when we exchanged “I love you's”. I remember I physically couldn’t leave your doorstep without telling you those words. It was an amazing first to the many “I love you’s” since, and even though I got back to San Diego at 6 AM I still had butterflies. Holding your hand and hugging you for the first time as a couple also was a nice cherry on top, haha."
 		},
 		{
 			image: "disney.jpeg",
 			word: "magic",
-			memory: ""
+			memory: "This was our first time going to Disney together, and it was magical. The whole park was engineered for couples to feel lovey-dovey and was I definitely feeling it. You were beautiful, the rides were fun, the friends were great, and the fire works were incredible. I wanted to kiss you so many times during that date, and I think I chickened out because I didn’t know how to do it. Either way, I wouldn’t have rather gone with anyone else."
 		},
 		{
-			image: "dune.jpeg",
-			word: "stuck",
-			memory: ""
+			image: "wedding.jpeg",
+			word: "family",
+			memory: "Getting to know your family has been such a blessing to me. I know that I’m probably not the best image to them, or the best boyfriend in their eyes, but they’ve shown me so much hospitality and care in making me feel welcome. Seeing the way that you love them, even when they test your patience, is also such a testament to the kind of person you are. You serve them, protect them, buy them gifts, and pray for them. Thank you for calling me higher in the ways that I need to love my own family."
+		},
+		{
+			image: "valentines.jpeg",
+			word: "up",
+			memory: "I actually felt pretty proud of our effort for this valentines. A nice dinner, outdoor up-themed movie, gifts, and flowers might be over the top. But what can I say? I love you that much. Thank you for being my valentines this past year, and letting me be a bit of a simp, haha. I’ve loved every second I could bring you flowers, or buy you a gift, laugh with you, or bring you a meal, because you mean so much to me. To more valentines to come!"
 		},
 		{
 			image: "sf.jpeg",
-			word: "nausea",
-			memory: ""
-		},
-		{
-			image: "retro.jpeg",
-			word: "cosmic",
-			memory: ""
+			word: "waves",
+			memory: "This was probably one of my favorite trips with the fiending five. To be honest, I used to be a little annoyed at how your roomies wanted so much of your time, and I thought I’d have only leftovers with you. But God has shown me the opposite. He’s used them to protect our relationship in so many ways. He’s used them to protect our purity, and to encourage you and build you up, even in times when I hurt you. Your roomies are such a gift to us, and I’m glad we get to share so many fun moments with them."
 		},
 		{
 			image: "strong.jpeg",
 			word: "strong",
-			memory: ""
+			memory: "This was just a funny picture where you kept trying to prove you were stronger than me, haha. I know we joke about being 60-40, but Romans 12:10 says, “Be devoted to one another in love; honor one another above yourselves”. If that’s what 60-40 is, then I’d love to give that to you. I’d love to keep honoring you above me, whether I’m upset with you or lovey-dovey, whether tired or energized. Happy one year anniversary my love, I love you!"
 		}
 
 	];
@@ -376,13 +392,16 @@
 		current_wordle.find(".gameboard-row").not(`div[guess=${current_guess_index}]`).slideUp(1000);
 		current_wordle.find(".keyboard").slideUp(1200);
 		current_wordle.find(".memory").delay(1500).slideDown(1200);
+		
+		//save progress
+		if(!progress.includes(word)) {
+			progress.push(word);
+			localStorage.setItem(storage_key, JSON.stringify(progress));
+		}
 	
 	}
 
 	$(document).ready(function () {
-
-		//init
-		$("#landing_div h1").slideDown(1500);
 
 		let section_ct = 0;
 		for(const section of sections) {
@@ -404,6 +423,7 @@
 			//Set up gameboard
 			let gameboard_inner = "";
 			let letter_counter = 0;
+			let memory_hidden = "hidden";
 			for(let i = 0; i < max_tries; i++) {
 				gameboard_inner += `<div class='gameboard-row' guess='${i}'>`;
 				for(const letter of word) {
@@ -413,52 +433,60 @@
 				gameboard_inner += "</div>"
 			}
 
+			let gameboard_html = `<div class='gameboard'>
+				${gameboard_inner}
+			</div>
+			<div class='keyboard'>
+				<div>
+					<button class="button keyboard-key">Q</button>
+					<button class="button keyboard-key">W</button>
+					<button class="button keyboard-key">E</button>
+					<button class="button keyboard-key">R</button>
+					<button class="button keyboard-key">T</button>
+					<button class="button keyboard-key">Y</button>
+					<button class="button keyboard-key">U</button>
+					<button class="button keyboard-key">I</button>
+					<button class="button keyboard-key">O</button>
+					<button class="button keyboard-key">P</button>
+				</div>
+				<div>
+					<button class="button keyboard-key">A</button>
+					<button class="button keyboard-key">S</button>
+					<button class="button keyboard-key">D</button>
+					<button class="button keyboard-key">F</button>
+					<button class="button keyboard-key">G</button>
+					<button class="button keyboard-key">H</button>
+					<button class="button keyboard-key">J</button>
+					<button class="button keyboard-key">K</button>
+					<button class="button keyboard-key">L</button>
+				</div>
+				<div>
+					<button class="button keyboard-key enter-key">ENT</button>
+					<button class="button keyboard-key">Z</button>
+					<button class="button keyboard-key">X</button>
+					<button class="button keyboard-key">C</button>
+					<button class="button keyboard-key">V</button>
+					<button class="button keyboard-key">B</button>
+					<button class="button keyboard-key">N</button>
+					<button class="button keyboard-key">M</button>
+					<button class="button keyboard-key delete-key">DEL</button>
+				</div>
+			</div>`;
+
+			if(progress.includes(word)) {
+				gameboard_html = `<h1>${word.toUpperCase()}.</h1>`;
+				memory_hidden = "";
+			}
+
 			//Polaroid
 			let polaroid_container = `<div 
 			style='background-image: url(assets/images/${image_name})' class='polaroid_div'>
 				
 				<div class='wordle_div' guess_index=0 id='wordle_${section_ct}' word='${word}' max=${max_tries} memory='${memory}'>
-					<div class='gameboard'>
-						${gameboard_inner}
-					</div>
-					<div class='keyboard'>
-						<div>
-							<button class="button keyboard-key">Q</button>
-							<button class="button keyboard-key">W</button>
-							<button class="button keyboard-key">E</button>
-							<button class="button keyboard-key">R</button>
-							<button class="button keyboard-key">T</button>
-							<button class="button keyboard-key">Y</button>
-							<button class="button keyboard-key">U</button>
-							<button class="button keyboard-key">I</button>
-							<button class="button keyboard-key">O</button>
-							<button class="button keyboard-key">P</button>
-						</div>
-						<div>
-							<button class="button keyboard-key">A</button>
-							<button class="button keyboard-key">S</button>
-							<button class="button keyboard-key">D</button>
-							<button class="button keyboard-key">F</button>
-							<button class="button keyboard-key">G</button>
-							<button class="button keyboard-key">H</button>
-							<button class="button keyboard-key">J</button>
-							<button class="button keyboard-key">K</button>
-							<button class="button keyboard-key">L</button>
-						</div>
-						<div>
-							<button class="button keyboard-key enter-key">ENT</button>
-							<button class="button keyboard-key">Z</button>
-							<button class="button keyboard-key">X</button>
-							<button class="button keyboard-key">C</button>
-							<button class="button keyboard-key">V</button>
-							<button class="button keyboard-key">B</button>
-							<button class="button keyboard-key">N</button>
-							<button class="button keyboard-key">M</button>
-							<button class="button keyboard-key delete-key">DEL</button>
-						</div>
-					</div>
+					
+					${gameboard_html}
 
-					<div hidden class='memory'>${memory_items}</div>
+					<div ${memory_hidden} class='memory'>${memory_items}</div>
 
 					<button class="exit button is-dark"><b>EXIT WORDLE</b></button>
 
@@ -535,6 +563,13 @@
 			wordle_submit();
 		}
 		
+	});
+
+	$(window).on("load", function(){
+
+		//init
+		$("#landing_div h1").slideDown(1500);
+
 	});
 
 </script>
